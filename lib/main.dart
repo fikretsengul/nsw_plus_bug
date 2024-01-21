@@ -16,30 +16,77 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        backgroundColor: Colors.yellow,
-        body: NestedScrollViewPlus(
-          headerSliverBuilder: (_, __) {
-            return [
-              OverlapAbsorberPlus(
-                sliver: SliverPersistentHeader(
-                  pinned: true,
-                  delegate: MyDelegate(
-                    minHeight: 100,
-                    maxHeight: 160,
-                  ),
+      home: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            bottom: const TabBar(
+              tabs: [
+                Tab(icon: Icon(Icons.list), text: 'NSViewPlus'),
+                Tab(icon: Icon(Icons.list_alt), text: 'NSViewOriginal'),
+              ],
+            ),
+          ),
+          backgroundColor: Colors.yellow,
+          body: TabBarView(
+            children: [
+              NestedScrollViewPlus(
+                headerSliverBuilder: (_, __) {
+                  return [
+                    OverlapAbsorberPlus(
+                      sliver: SliverPersistentHeader(
+                        pinned: true,
+                        delegate: MyDelegate(
+                          minHeight: 100,
+                          maxHeight: 160,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+                body: CustomScrollView(
+                  slivers: [
+                    const OverlapInjectorPlus(),
+                    SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          Container(height: 100, color: Colors.red),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ];
-          },
-          body: CustomScrollView(
-            slivers: [
-              const OverlapInjectorPlus(),
-              SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    Container(height: 100, color: Colors.red),
-                  ],
+              NestedScrollView(
+                headerSliverBuilder: (context, __) {
+                  return [
+                    SliverOverlapAbsorber(
+                      handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                      sliver: SliverPersistentHeader(
+                        pinned: true,
+                        delegate: MyDelegate(
+                          minHeight: 100,
+                          maxHeight: 160,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+                body: Builder(
+                  builder: (context) {
+                    return CustomScrollView(
+                      slivers: [
+                        SliverOverlapInjector(handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context)),
+                        SliverToBoxAdapter(
+                          child: Column(
+                            children: [
+                              Container(height: 100, color: Colors.red),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ],
