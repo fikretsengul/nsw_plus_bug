@@ -12,7 +12,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter:
     sdk: flutter
-  nested_scroll_view_plus: ^1.0.2
+  nested_scroll_view_plus: ^1.0.3
 
 dev_dependencies:
   custom_lint: ^0.5.8

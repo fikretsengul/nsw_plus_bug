@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/src/rendering/sliver_persistent_header.dart';
 import 'package:nested_scroll_view_plus/nested_scroll_view_plus.dart';
 
 void main() {
@@ -33,24 +34,27 @@ class _MyAppState extends State<MyApp> {
               NestedScrollViewPlus(
                 headerSliverBuilder: (_, __) {
                   return [
-                    OverlapAbsorberPlus(
-                      sliver: SliverPersistentHeader(
+                    const OverlapAbsorberPlus(
+                      sliver: SliverAppBar(
                         pinned: true,
-                        delegate: MyDelegate(
-                          minHeight: 100,
-                          maxHeight: 160,
-                        ),
+                        stretch: true,
+                        backgroundColor: Colors.purple,
+                        collapsedHeight: 100,
+                        expandedHeight: 160,
                       ),
                     ),
                   ];
                 },
                 body: CustomScrollView(
+                  physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                   slivers: [
                     const OverlapInjectorPlus(),
                     SliverToBoxAdapter(
                       child: Column(
                         children: [
-                          Container(height: 100, color: Colors.red),
+                          Container(height: 200, color: Colors.red),
+                          Container(height: 200, color: Colors.green),
+                          Container(height: 200, color: Colors.blue),
                         ],
                       ),
                     ),
@@ -62,12 +66,12 @@ class _MyAppState extends State<MyApp> {
                   return [
                     SliverOverlapAbsorber(
                       handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-                      sliver: SliverPersistentHeader(
+                      sliver: const SliverAppBar(
                         pinned: true,
-                        delegate: MyDelegate(
-                          minHeight: 100,
-                          maxHeight: 160,
-                        ),
+                        stretch: true,
+                        backgroundColor: Colors.purple,
+                        collapsedHeight: 100,
+                        expandedHeight: 160,
                       ),
                     ),
                   ];
@@ -75,12 +79,15 @@ class _MyAppState extends State<MyApp> {
                 body: Builder(
                   builder: (context) {
                     return CustomScrollView(
+                      physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                       slivers: [
                         SliverOverlapInjector(handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context)),
                         SliverToBoxAdapter(
                           child: Column(
                             children: [
-                              Container(height: 100, color: Colors.red),
+                              Container(height: 200, color: Colors.red),
+                              Container(height: 200, color: Colors.green),
+                              Container(height: 200, color: Colors.blue),
                             ],
                           ),
                         ),
@@ -107,10 +114,18 @@ class MyDelegate extends SliverPersistentHeaderDelegate {
   double maxHeight;
 
   @override
+  OverScrollHeaderStretchConfiguration? get stretchConfiguration => OverScrollHeaderStretchConfiguration();
+
+  @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(
-      height: maxHeight,
-      color: Colors.purple,
+    return SizedBox.expand(
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          height: maxHeight,
+          color: Colors.purple,
+        ),
+      ),
     );
   }
 
