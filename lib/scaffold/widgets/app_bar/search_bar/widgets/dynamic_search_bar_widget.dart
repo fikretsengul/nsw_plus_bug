@@ -110,7 +110,7 @@ class _DynamicSearchBarWidgetState extends State<DynamicSearchBarWidget> {
                   style: CupertinoTheme.of(context).textTheme.navActionTextStyle,
                   controller: widget.editingController,
                   focusNode: widget.focusNode,
-                  backgroundColor: CupertinoColors.systemFill,
+                  backgroundColor: CupertinoColors.lightBackgroundGray,
                   autocorrect: false,
                 ),
               ),

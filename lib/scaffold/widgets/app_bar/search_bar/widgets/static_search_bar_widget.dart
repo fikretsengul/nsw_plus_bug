@@ -80,7 +80,7 @@ class StaticSearchBarWidget extends StatelessWidget {
                           color: CupertinoColors.placeholderText.withOpacity(opacity),
                         ),
                     style: CupertinoTheme.of(context).textTheme.actionTextStyle,
-                    backgroundColor: CupertinoColors.systemFill,
+                    backgroundColor: CupertinoColors.lightBackgroundGray,
                   ),
                 ),
                 Row(
