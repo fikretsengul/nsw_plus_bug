@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:nested_scroll_view_plus/nested_scroll_view_plus.dart';
 
 import '../overridens/overriden_transitionable_navigation_bar.dart';
 import 'models/appbar_settings.dart';
@@ -50,8 +51,9 @@ class CupertinoScaffold extends StatefulWidget {
 }
 
 class _SuperScaffoldState extends State<CupertinoScaffold> {
-  bool _isContentScrollable = false;
+  bool _isScrollable = false;
   late final NavigationBarStaticComponentsKeys _keys;
+  late final GlobalKey<NestedScrollViewStatePlus> _nestedScrollViewKey;
   late final IndicatorStateListenable _refreshListenable;
   late final ScrollController _scrollController;
 
@@ -59,13 +61,13 @@ class _SuperScaffoldState extends State<CupertinoScaffold> {
   void didChangeDependencies() {
     setState(() {
       if (widget.forceScroll) {
-        _isContentScrollable = true;
+        _isScrollable = true;
       } else {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (_scrollController.position.maxScrollExtent > 0) {
-            _isContentScrollable = true;
+          if (_nestedScrollViewKey.currentState!.innerController.position.maxScrollExtent > 0) {
+            _isScrollable = true;
           } else {
-            _isContentScrollable = false;
+            _isScrollable = false;
           }
         });
       }
@@ -85,6 +87,7 @@ class _SuperScaffoldState extends State<CupertinoScaffold> {
     _keys = NavigationBarStaticComponentsKeys();
     _scrollController = widget.scrollController ?? ScrollController();
     _refreshListenable = IndicatorStateListenable();
+    _nestedScrollViewKey = GlobalKey<NestedScrollViewStatePlus>();
   }
 
   Store get _store => Store.instance();
@@ -147,7 +150,8 @@ class _SuperScaffoldState extends State<CupertinoScaffold> {
               body: widget.body,
               onRefresh: widget.onRefresh,
               refreshListenable: _refreshListenable,
-              isScrollable: _isContentScrollable,
+              isScrollable: _isScrollable,
+              nestedScrollViewKey: _nestedScrollViewKey,
             ),
             SearchBarResult(
               measures: widget.measures,
@@ -162,7 +166,7 @@ class _SuperScaffoldState extends State<CupertinoScaffold> {
               shouldStretch: widget.shouldStretch,
               shouldTransiteBetweenRoutes: widget.shouldTransiteBetweenRoutes,
               onCollapsed: widget.onCollapsed,
-              isScrollable: _isContentScrollable,
+              isScrollable: _isScrollable,
             ),
             Refresher(refreshListenable: _refreshListenable),
           ],

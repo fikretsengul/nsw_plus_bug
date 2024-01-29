@@ -19,6 +19,7 @@ class Body extends StatelessWidget {
     required this.scrollBehavior,
     required this.refreshListenable,
     required this.isScrollable,
+    required this.nestedScrollViewKey,
     this.onRefresh,
     super.key,
   });
@@ -31,6 +32,7 @@ class Body extends StatelessWidget {
   final IndicatorStateListenable refreshListenable;
   final SearchBarScrollBehavior scrollBehavior;
   final ScrollController scrollController;
+  final GlobalKey<NestedScrollViewStatePlus> nestedScrollViewKey;
 
   Store get _store => Store.instance();
 
@@ -58,6 +60,7 @@ class Body extends StatelessWidget {
                 thumbVisibility: true,
                 thicknessWhileDragging: 6,
                 child: NestedScrollViewPlus(
+                  key: nestedScrollViewKey,
                   controller: scrollController,
                   physics: SnapScrollPhysics(
                     parent: isScrollable ? physics : const NeverScrollableScrollPhysics(),
@@ -96,7 +99,15 @@ class Body extends StatelessWidget {
                       ),
                     ];
                   },
-                  body: body,
+                  body: CustomScrollView(
+                    physics: isScrollable
+                        ? const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics())
+                        : const NeverScrollableScrollPhysics(),
+                    slivers: [
+                      const OverlapInjectorPlus(),
+                      body,
+                    ],
+                  ),
                 ),
               );
             },
