@@ -1,14 +1,15 @@
+// ignore_for_file: max_lines_for_file, max_lines_for_function
 import 'dart:async';
 
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:nested_scroll_view_plus/nested_scroll_view_plus.dart';
-import 'package:snap_scroll_physics/snap_scroll_physics.dart';
 
 import '../../overridens/overriden_cupertino_scrollbar.dart';
 import '../models/appbar_search_bar_settings.dart';
 import '../utils/measures.dart';
 import '../utils/store.dart';
+import 'snap_scroll_listener.dart';
 
 class Body extends StatelessWidget {
   const Body({
@@ -59,51 +60,41 @@ class Body extends StatelessWidget {
                 padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top + measures.appbarHeight),
                 thumbVisibility: true,
                 thicknessWhileDragging: 6,
-                child: NestedScrollViewPlus(
-                  key: nestedScrollViewKey,
-                  controller: scrollController,
-                  physics: SnapScrollPhysics(
-                    parent: isScrollable ? physics : const NeverScrollableScrollPhysics(),
-                    snaps: [
-                      if (scrollBehavior == SearchBarScrollBehavior.floated) ...{
-                        Snap.avoidZone(0, measures.searchContainerHeight),
-                      },
-                      if (scrollBehavior == SearchBarScrollBehavior.floated) ...{
-                        Snap.avoidZone(
-                          measures.searchContainerHeight,
-                          measures.largeTitleContainerHeight + measures.searchContainerHeight,
-                        ),
-                      },
-                      if (scrollBehavior == SearchBarScrollBehavior.pinned) ...{
-                        Snap.avoidZone(0, measures.largeTitleContainerHeight),
-                      },
-                    ],
-                  ),
-                  headerSliverBuilder: (context, _) {
-                    return [
-                      ValueListenableBuilder(
-                        valueListenable: _store.searchBarAnimationStatus,
-                        builder: (_, __, ___) {
-                          final height = MediaQuery.paddingOf(context).top + measures.appbarHeight;
+                child: SnappingScrollListener(
+                  scrollController: scrollController,
+                  scrollBehavior: scrollBehavior,
+                  collapsedHeight: measures.searchContainerHeight,
+                  expandedHeight: measures.largeTitleContainerHeight,
+                  child: NestedScrollViewPlus(
+                    key: nestedScrollViewKey,
+                    controller: scrollController,
+                    physics: isScrollable ? physics : const NeverScrollableScrollPhysics(),
+                    headerSliverBuilder: (context, _) {
+                      return [
+                        ValueListenableBuilder(
+                          valueListenable: _store.searchBarAnimationStatus,
+                          builder: (_, __, ___) {
+                            final height = MediaQuery.paddingOf(context).top + measures.appbarHeight;
 
-                          return SliverPersistentHeader(
-                            pinned: true,
-                            delegate: MyDelegate(
-                              minHeight: isScrollable ? 0 : height - 0.000001,
-                              maxHeight: height,
-                            ),
-                          );
-                        },
-                      ),
-                    ];
-                  },
-                  body: CustomScrollView(
-                    physics: isScrollable
-                        ? const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics())
-                        : const NeverScrollableScrollPhysics(),
-                    slivers: [
-                      body,
-                    ],
+                            return SliverPersistentHeader(
+                              pinned: true,
+                              delegate: MyDelegate(
+                                minHeight: isScrollable ? 0 : height - 0.000001,
+                                maxHeight: height,
+                              ),
+                            );
+                          },
+                        ),
+                      ];
+                    },
+                    body: CustomScrollView(
+                      physics: isScrollable
+                          ? const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics())
+                          : const NeverScrollableScrollPhysics(),
+                      slivers: [
+                        body,
+                      ],
+                    ),
                   ),
                 ),
               );

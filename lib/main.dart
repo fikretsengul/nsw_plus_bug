@@ -56,7 +56,7 @@ class _MyAppState extends State<MyApp> {
                 ),
               );
             },
-            childCount: 100,
+            childCount: 20,
           ),
         ),
       ),
@@ -72,6 +72,9 @@ class SecondPage extends StatelessWidget {
     return CupertinoScaffold(
       onRefresh: () => print('refresh'),
       appBar: AppBarSettings(
+        searchBar: AppBarSearchBarSettings(
+          enabled: true,
+        ),
         bottom: AppBarBottomSettings(
           enabled: true,
           child: Padding(
