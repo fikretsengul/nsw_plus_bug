@@ -15,9 +15,7 @@ dependencies:
       url: https://github.com/xuelongqy/flutter_easy_refresh.git
   flutter:
     sdk: flutter
-  nested_scroll_view_plus:
-    git:
-      url: https://github.com/idootop/nested_scroll_view_plus.git
+  nested_scroll_view_plus: ^2.0.0
   snap_scroll_physics: ^0.0.1+3
   uicons: ^1.0.1
 

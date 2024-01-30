@@ -81,21 +81,19 @@ class Body extends StatelessWidget {
                   ),
                   headerSliverBuilder: (context, _) {
                     return [
-                      OverlapAbsorberPlus(
-                        sliver: ValueListenableBuilder(
-                          valueListenable: _store.searchBarAnimationStatus,
-                          builder: (_, __, ___) {
-                            final height = MediaQuery.paddingOf(context).top + measures.appbarHeight;
+                      ValueListenableBuilder(
+                        valueListenable: _store.searchBarAnimationStatus,
+                        builder: (_, __, ___) {
+                          final height = MediaQuery.paddingOf(context).top + measures.appbarHeight;
 
-                            return SliverPersistentHeader(
-                              pinned: true,
-                              delegate: MyDelegate(
-                                minHeight: isScrollable ? 0 : height - 0.000001,
-                                maxHeight: height,
-                              ),
-                            );
-                          },
-                        ),
+                          return SliverPersistentHeader(
+                            pinned: true,
+                            delegate: MyDelegate(
+                              minHeight: isScrollable ? 0 : height - 0.000001,
+                              maxHeight: height,
+                            ),
+                          );
+                        },
                       ),
                     ];
                   },
@@ -104,7 +102,6 @@ class Body extends StatelessWidget {
                         ? const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics())
                         : const NeverScrollableScrollPhysics(),
                     slivers: [
-                      const OverlapInjectorPlus(),
                       body,
                     ],
                   ),
