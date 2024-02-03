@@ -1,11 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'scaffold/cupertino_scaffold.dart';
-import 'scaffold/models/appbar_bottom_settings.dart';
-import 'scaffold/models/appbar_large_title_settings.dart';
-import 'scaffold/models/appbar_search_bar_settings.dart';
-import 'scaffold/models/appbar_settings.dart';
+import 'package:nested_scroll_view_plus/nested_scroll_view_plus.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,41 +17,103 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: CupertinoScaffold(
-        forceScroll: true,
-        onRefresh: () => print('refresh'),
-        appBar: AppBarSettings(
-          title: const Text('Snapping Scroll'),
-          largeTitle: AppBarLargeTitleSettings(
-            largeTitle: 'Snapping Scroll',
+      home: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            bottom: const TabBar(
+              tabs: [
+                Tab(icon: Icon(Icons.list), text: 'NSViewPlus'),
+                Tab(icon: Icon(Icons.list_alt), text: 'NSViewOriginal'),
+              ],
+            ),
           ),
-          searchBar: AppBarSearchBarSettings(
-            enabled: true,
-          ),
-        ),
-        body: SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              final number = index + 1;
+          backgroundColor: Colors.yellow,
+          body: TabBarView(
+            children: [
+              NestedScrollViewPlus(
+                headerSliverBuilder: (_, __) {
+                  return [
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: MyDelegate(
+                        minHeight: 20,
+                        maxHeight: 160,
+                      ),
+                    ),
+                  ];
+                },
+                body: CustomScrollView(
+                  slivers: [
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          final number = index + 1;
 
-              return GestureDetector(
-                onTap: () => Navigator.of(context).push(
-                  CupertinoPageRoute(
-                    builder: (context) => const SecondPage(),
-                  ),
+                          return Container(
+                            height: 50,
+                            color: index.isEven
+                                ? CupertinoColors.lightBackgroundGray
+                                : CupertinoColors.extraLightBackgroundGray,
+                            alignment: Alignment.center,
+                            child: Text(
+                              '$number',
+                              style: CupertinoTheme.of(context).textTheme.textStyle,
+                            ),
+                          );
+                        },
+                        childCount: 20,
+                      ),
+                    ),
+                  ],
                 ),
-                child: Container(
-                  height: 50,
-                  color: index.isEven ? CupertinoColors.lightBackgroundGray : CupertinoColors.extraLightBackgroundGray,
-                  alignment: Alignment.center,
-                  child: Text(
-                    '$number',
-                    style: CupertinoTheme.of(context).textTheme.textStyle,
-                  ),
+              ),
+              NestedScrollView(
+                headerSliverBuilder: (context, __) {
+                  return [
+                    SliverOverlapAbsorber(
+                      handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                      sliver: SliverPersistentHeader(
+                        pinned: true,
+                        delegate: MyDelegate(
+                          minHeight: 20,
+                          maxHeight: 160,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+                body: Builder(
+                  builder: (context) {
+                    return CustomScrollView(
+                      slivers: [
+                        SliverOverlapInjector(handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context)),
+                        SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              final number = index + 1;
+
+                              return Container(
+                                height: 50,
+                                color: index.isEven
+                                    ? CupertinoColors.lightBackgroundGray
+                                    : CupertinoColors.extraLightBackgroundGray,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  '$number',
+                                  style: CupertinoTheme.of(context).textTheme.textStyle,
+                                ),
+                              );
+                            },
+                            childCount: 20,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
-              );
-            },
-            childCount: 20,
+              ),
+            ],
           ),
         ),
       ),
@@ -64,59 +121,29 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-class SecondPage extends StatelessWidget {
-  const SecondPage({super.key});
+class MyDelegate extends SliverPersistentHeaderDelegate {
+  MyDelegate({
+    required this.minHeight,
+    required this.maxHeight,
+  });
+
+  double minHeight;
+  double maxHeight;
 
   @override
-  Widget build(BuildContext context) {
-    return CupertinoScaffold(
-      onRefresh: () => print('refresh'),
-      appBar: AppBarSettings(
-        searchBar: AppBarSearchBarSettings(
-          enabled: true,
-        ),
-        bottom: AppBarBottomSettings(
-          enabled: true,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Wrap(
-                spacing: 16,
-                children: ['First', 'Second', 'Third', 'Fourth', 'Fifth'].map((e) {
-                  return Container(
-                    height: 30,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: e == 'First' ? CupertinoColors.systemBlue : CupertinoColors.lightBackgroundGray,
-                      borderRadius: const BorderRadius.all(Radius.circular(16)),
-                    ),
-                    child: Center(
-                      child: Text(
-                        e,
-                        style: CupertinoTheme.of(context).textTheme.actionTextStyle.copyWith(
-                              color: e == 'First' ? CupertinoColors.white : CupertinoColors.black,
-                            ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-          ),
-        ),
-        largeTitle: AppBarLargeTitleSettings(
-          largeTitle: 'Second Page',
-        ),
-      ),
-      body: SliverToBoxAdapter(
-        child: Column(
-          children: [
-            Container(height: 200, color: Colors.red),
-            Container(height: 200, color: Colors.green),
-          ],
-        ),
-      ),
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      height: maxHeight,
+      color: Colors.purple,
     );
   }
+
+  @override
+  double get maxExtent => maxHeight;
+
+  @override
+  double get minExtent => minHeight;
+
+  @override
+  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => true;
 }
